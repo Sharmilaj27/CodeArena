@@ -1,0 +1,856 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>CodeArena — Competitive Coding & AI Coaching for Engineers</title>
+<meta name="description" content="Practice DSA problems, get AI-powered feedback on every submission, and crush your placement interviews." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/theme/dracula.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/python/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/javascript/javascript.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/clike/clike.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/addon/edit/closebrackets.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/addon/edit/matchbrackets.min.js"></script>
+
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['"Geist"','ui-sans-serif','system-ui','sans-serif'],
+          display: ['"Fraunces"','ui-serif','Georgia','serif'],
+          mono: ['"JetBrains Mono"','ui-monospace','monospace'],
+        },
+        colors: {
+          bg: 'rgb(var(--bg) / <alpha-value>)',
+          fg: 'rgb(var(--fg) / <alpha-value>)',
+          card: 'rgb(var(--card) / <alpha-value>)',
+          muted: 'rgb(var(--muted) / <alpha-value>)',
+          mutedfg: 'rgb(var(--mutedfg) / <alpha-value>)',
+          border: 'rgb(var(--border) / <alpha-value>)',
+          primary: 'rgb(var(--primary) / <alpha-value>)',
+          primaryfg: 'rgb(var(--primaryfg) / <alpha-value>)',
+          accent: 'rgb(var(--accent) / <alpha-value>)',
+          success: 'rgb(var(--success) / <alpha-value>)',
+          warning: 'rgb(var(--warning) / <alpha-value>)',
+          danger: 'rgb(var(--danger) / <alpha-value>)',
+        },
+      }
+    }
+  }
+</script>
+
+<style>
+  :root {
+    --bg: 250 250 247;
+    --fg: 24 24 32;
+    --card: 255 255 255;
+    --muted: 244 244 240;
+    --mutedfg: 110 110 120;
+    --border: 228 228 224;
+    --primary: 109 70 240;
+    --primaryfg: 255 255 255;
+    --accent: 240 235 255;
+    --success: 27 162 86;
+    --warning: 217 137 14;
+    --danger: 220 60 60;
+  }
+  .dark {
+    --bg: 14 14 18;
+    --fg: 240 240 248;
+    --card: 22 22 28;
+    --muted: 28 28 36;
+    --mutedfg: 150 150 160;
+    --border: 38 38 48;
+    --primary: 158 130 255;
+    --primaryfg: 14 14 18;
+    --accent: 38 28 70;
+    --success: 60 200 110;
+    --warning: 240 170 50;
+    --danger: 240 90 90;
+  }
+  html, body { height: 100%; }
+
+  body {
+    font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+    background-color: rgb(var(--bg));
+    color: rgb(var(--fg));
+    -webkit-font-smoothing: antialiased;
+     font-size: 16px;   
+    -moz-osx-font-smoothing: grayscale;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgb(var(--primary) / .12), transparent),
+      radial-gradient(ellipse 60% 50% at 80% 110%, rgb(var(--primary) / .06), transparent);
+    background-attachment: fixed;
+  }
+  .font-display { font-family: 'Fraunces', serif; letter-spacing: -.025em; font-optical-sizing: auto; font-variation-settings: "opsz" 96; }
+  .font-mono { font-family: 'JetBrains Mono', monospace; }
+  .surface { background: linear-gradient(180deg, rgb(var(--card)), rgb(var(--card) / .85)); box-shadow: inset 0 1px 0 0 rgb(255 255 255 / .03), 0 1px 2px 0 rgb(0 0 0 / .25); }
+  .glass { background: rgb(var(--card) / .65); backdrop-filter: blur(12px); }
+  .grid-bg {
+    background-image:
+      linear-gradient(rgb(var(--border) / .5) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--border) / .5) 1px, transparent 1px);
+    background-size: 32px 32px;
+    -webkit-mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, black, transparent);
+            mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, black, transparent);
+  }
+  .ring-glow { box-shadow: 0 0 0 1px rgb(var(--primary) / .3), 0 8px 32px -8px rgb(var(--primary) / .35); }
+
+  .btn { display:inline-flex; align-items:center; gap:.5rem; padding:.5rem .9rem; border-radius:.5rem; font-size:.875rem; font-weight:500; transition:all .15s; border:1px solid transparent; cursor:pointer; }
+  .btn-primary { background: rgb(var(--primary)); color: rgb(var(--primaryfg)); }
+  .btn-primary:hover { filter: brightness(1.08); }
+  .btn-outline { border-color: rgb(var(--border)); background: transparent; color: rgb(var(--fg)); }
+  .btn-outline:hover { background: rgb(var(--muted)); }
+  .btn-ghost { background: transparent; color: rgb(var(--fg)); }
+  .btn-ghost:hover { background: rgb(var(--muted)); }
+
+  .pill { display:inline-flex; align-items:center; gap:.25rem; padding:.125rem .5rem; border-radius:9999px; font-size:.65rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; }
+  .pill-easy   { background: rgb(60 200 110 / .15); color: rgb(60 200 110); }
+  .pill-medium { background: rgb(240 170 50 / .15); color: rgb(240 170 50); }
+  .pill-hard   { background: rgb(240 90 90 / .15);  color: rgb(240 90 90); }
+  :not(.dark) .pill-easy   { background: rgb(27 162 86 / .12); color: rgb(27 162 86); }
+  :not(.dark) .pill-medium { background: rgb(217 137 14 / .12); color: rgb(217 137 14); }
+  :not(.dark) .pill-hard   { background: rgb(220 60 60 / .12); color: rgb(220 60 60); }
+
+  .chip { padding:.125rem .4rem; border-radius:.25rem; font-size:.65rem; background: rgb(var(--muted)); color: rgb(var(--mutedfg)); }
+
+  .input { width:100%; background: rgb(var(--muted)); border:1px solid rgb(var(--border)); padding:.5rem .8rem; border-radius:.5rem; font-size:.875rem; color: rgb(var(--fg)); }
+  .input:focus { outline:none; border-color: rgb(var(--primary)); box-shadow: 0 0 0 3px rgb(var(--primary) / .2); }
+
+.view { display: none; }
+.view.active { display: block;  animation: fade .3s ease-out; }
+  @keyframes fade { from { opacity:0; transform: translateY(4px); } to { opacity:1; transform: none; } }
+
+  .CodeMirror { height: 100%; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+  .dark .CodeMirror { background: #0e0e14; }
+  :not(.dark) .CodeMirror { background: rgb(var(--card)); color: rgb(var(--fg)); }
+  :not(.dark) .CodeMirror-gutters { background: rgb(var(--card)); border-right: 1px solid rgb(var(--border)); }
+  :not(.dark) .CodeMirror-linenumber { color: rgb(var(--mutedfg)); }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: rgb(var(--border)); border-radius: 6px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgb(var(--mutedfg) / .5); }
+
+  kbd { font-family:'JetBrains Mono',monospace; font-size:10px; padding:2px 6px; border:1px solid rgb(var(--border)); border-radius:4px; background: rgb(var(--muted)); }
+
+  .bar { transition: opacity .2s; }
+  .bar:hover { opacity: .8; }
+</style>
+</head>
+<body class="min-h-screen">
+
+<section id="view-landing" class="view active">
+  <header class="glass border-b border-border sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="size-8 rounded-lg bg-primary grid place-items-center ring-glow">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-primaryfg"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+        <span class="font-display italic text-lg">CodeArena</span>
+      </div>
+      <nav class="hidden md:flex items-center gap-6 text-sm text-mutedfg">
+        <a href="#features" class="hover:text-fg">Features</a>
+        <a href="#problems-preview" class="hover:text-fg">Problems</a>
+        <a href="#dashboard-preview" class="hover:text-fg">Dashboard</a>
+      </nav>
+      <div class="flex items-center gap-2">
+        <button onclick="toggleTheme()" class="btn btn-ghost" aria-label="Toggle theme" id="theme-btn-landing">
+          <svg id="sun-icon-landing" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        </button>
+       <button onclick="go('dashboard')" class="btn btn-primary">
+  Enter App
+</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="relative">
+    <div class="absolute inset-0 grid-bg pointer-events-none"></div>
+    <div class="relative max-w-5xl mx-auto px-6 pt-20 pb-24 text-center">
+      <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs border border-border bg-card/60">
+        <span class="size-1.5 rounded-full bg-primary animate-pulse"></span>
+        AI-powered coaching for engineers
+      </span>
+      <h1 class="mt-6 font-display text-5xl md:text-7xl leading-[0.95] text-balance">
+        Crack your <em class="text-primary not-italic">placement</em> with an AI coach in your pocket.
+      </h1>
+      <p class="mt-5 text-mutedfg text-lg max-w-2xl mx-auto text-pretty">
+        Solve curated DSA problems, get instant AI feedback on every submission,
+        and discover exactly what to fix before your next interview.
+      </p>
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+       <button onclick="go('dashboard')" class="btn btn-primary px-5 py-2.5">
+  Enter Dashboard →
+</button>
+        <button onclick="go('dashboard')" class="btn btn-outline px-5 py-2.5">See dashboard</button>
+      </div>
+      <p class="mt-4 text-xs text-mutedfg">No signup needed — fully static demo.</p>
+    </div>
+
+    <div id="features" class="max-w-6xl mx-auto px-6 pb-20 grid md:grid-cols-3 gap-4">
+      <div class="surface rounded-2xl p-6 border border-border">
+        <div class="size-9 rounded-lg bg-accent grid place-items-center mb-3">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M12 2 4 6v6c0 5 3.5 9 8 10 4.5-1 8-5 8-10V6l-8-4Z"/></svg>
+        </div>
+        <h3 class="font-semibold">Curated problem bank</h3>
+        <p class="text-sm text-mutedfg mt-1.5">Hand-picked DSA problems tagged by topic and difficulty — exactly what placement panels ask.</p>
+      </div>
+      <div class="surface rounded-2xl p-6 border border-border">
+        <div class="size-9 rounded-lg bg-accent grid place-items-center mb-3">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="m12 3-1.9 5.8L4 10l4.6 3.4L7 19l5-3 5 3-1.6-5.6L20 10l-6.1-1.2L12 3Z"/></svg>
+        </div>
+        <h3 class="font-semibold">AI judge & coach</h3>
+        <p class="text-sm text-mutedfg mt-1.5">Submit code, get a strict verdict plus a hint that points to the exact line you broke — never the full solution.</p>
+      </div>
+      <div class="surface rounded-2xl p-6 border border-border">
+        <div class="size-9 rounded-lg bg-accent grid place-items-center mb-3">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
+        </div>
+        <h3 class="font-semibold">Weakness map</h3>
+        <p class="text-sm text-mutedfg mt-1.5">Track accuracy per topic. The dashboard surfaces your weakest area so you know exactly what to drill next.</p>
+      </div>
+    </div>
+
+    <footer class="border-t border-border">
+      <div class="max-w-6xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-mutedfg">
+        <p>© 2026 CodeArena — static demo build</p>
+        <p>Built with Tailwind, CodeMirror & a little ✨</p>
+      </div>
+    </footer>
+  </main>
+</section>
+
+<section id="view-app" class="view min-h-screen">
+  <aside class="hidden md:flex w-60 shrink-0 flex-col justify-between border-r border-border glass">
+
+  <!-- TOP -->
+  <div>
+    <div class="px-5 py-5 flex items-center gap-2.5 cursor-pointer" onclick="go('landing')">
+      <div class="size-8 rounded-lg bg-primary grid place-items-center ring-glow">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-primaryfg">
+          <polyline points="16 18 22 12 16 6"/>
+          <polyline points="8 6 2 12 8 18"/>
+        </svg>
+      </div>
+      <div>
+        <div class="font-display text-lg italic">CodeArena</div>
+        <div class="text-[10px] uppercase tracking-[0.18em] text-mutedfg">Practice · AI Coach</div>
+      </div>
+    </div>
+
+    <nav class="px-3 py-2 flex flex-col gap-0.5 mt-4" id="sidebar-nav"></nav>
+  </div>
+
+  <!-- BOTTOM -->
+  <div class="p-3 border-t border-border">
+    <div class="rounded-lg p-3 bg-accent/40 text-xs">
+      <div class="flex items-center gap-2">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary">
+          <path d="m12 3-1.9 5.8L4 10l4.6 3.4L7 19l5-3 5 3-1.6-5.6L20 10l-6.1-1.2L12 3Z"/>
+        </svg>
+        <span class="font-medium">AI Coach</span>
+      </div>
+      <p class="mt-1.5 text-mutedfg leading-relaxed">
+        Get hints, code feedback and weakness analysis on every problem.
+      </p>
+    </div>
+  </div>
+
+</aside>
+
+  <div class="flex-1 flex flex-col min-w-0">
+    <header class="h-14 border-b border-border glass flex items-center justify-between px-4 md:px-6">
+      <div class="md:hidden flex items-center gap-2 cursor-pointer" onclick="go('landing')">
+        <div class="size-7 rounded-md bg-primary grid place-items-center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-primaryfg"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+        <span class="font-display italic text-lg">CodeArena</span>
+      </div>
+      <div class="hidden md:block text-xs text-mutedfg">Search</div>
+      <div class="flex items-center gap-2">
+        <div class="hidden sm:flex items-center gap-2 px-2.5 py-1.5 rounded-md bg-muted text-xs">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-mutedfg"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>codearena@gmail.com</span>
+        </div>
+        <button onclick="toggleTheme()" class="btn btn-ghost" id="theme-btn-app" aria-label="Toggle theme">
+          <svg id="sun-icon-app" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="flex-1 min-w-0">
+      <!-- Dashboard -->
+      <div id="page-dashboard" class="page hidden p-6 md:p-10 max-w-7xl mx-auto space-y-8">
+        <header class="space-y-1">
+  <p class="text-xs uppercase tracking-[0.18em] text-mutedfg">Dashboard</p>
+  <h1 class="font-display text-4xl">Hey, ready to <em class="text-primary not-italic">level up</em>?</h1>
+  <p class="text-mutedfg">Your coding stats, weakness map and recent activity.</p>
+</header>
+
+<div class="mt-4">
+  <button onclick="go('problems')" class="btn btn-primary">
+    Solve Problems →
+  </button>
+</div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="stat-cards"></div>
+        <div class="grid lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 surface rounded-xl p-6 border border-border">
+            <div class="flex items-end justify-between mb-4">
+              <div>
+                <h2 class="text-lg font-semibold">Accuracy by topic</h2>
+                <p class="text-xs text-mutedfg">Where you shine — and where to focus.</p>
+              </div>
+            </div>
+            <div class="h-64" id="bar-chart"></div>
+          </div>
+          <div class="surface rounded-xl p-6 border border-border space-y-4">
+            <div class="flex items-center gap-2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-warning"><path d="M10.3 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+              <h2 class="text-lg font-semibold">Weakness report</h2>
+            </div>
+            <div id="weakness"></div>
+          </div>
+        </div>
+        <div class="surface rounded-xl p-6 border border-border">
+          <h2 class="text-lg font-semibold mb-4">Recent activity</h2>
+          <div id="recent-activity" class="divide-y divide-border"></div>
+        </div>
+      </div>
+
+      <div id="page-problems" class="page hidden p-6 md:p-10 max-w-7xl mx-auto space-y-6">
+        <header class="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p class="text-xs uppercase tracking-[0.18em] text-mutedfg">Problem bank</p>
+            <h1 class="font-display text-4xl mt-1">Pick your <em class="text-primary not-italic">battle</em>.</h1>
+          </div>
+          <p class="text-sm text-mutedfg" id="problems-count"></p>
+        </header>
+        <div class="surface rounded-xl border border-border p-3 flex flex-col md:flex-row gap-3">
+          <div class="flex-1 relative">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-mutedfg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input id="search" placeholder="Search problems by title or topic…" class="input pl-9" />
+          </div>
+          <select id="diff-filter" class="input md:w-40">
+            <option value="all">All difficulties</option>
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+          <select id="topic-filter" class="input md:w-44"></select>
+        </div>
+        <div class="surface rounded-xl border border-border overflow-hidden">
+          <table class="w-full text-sm">
+            <thead class="text-xs uppercase tracking-wider text-mutedfg">
+              <tr class="border-b border-border">
+                <th class="text-left px-4 py-3 font-medium">#</th>
+                <th class="text-left px-4 py-3 font-medium">Title</th>
+                <th class="text-left px-4 py-3 font-medium hidden md:table-cell">Topics</th>
+                <th class="text-left px-4 py-3 font-medium">Difficulty</th>
+                <th class="text-left px-4 py-3 font-medium hidden sm:table-cell">Status</th>
+              </tr>
+            </thead>
+            <tbody id="problems-rows"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="page-detail" class="page hidden h-[calc(100vh-3.5rem)] grid lg:grid-cols-2 gap-0">
+        <div class="overflow-y-auto p-6 md:p-8 lg:border-r border-border" id="detail-left"></div>
+        <div class="flex flex-col bg-card min-h-[400px]">
+          <div class="flex items-center justify-between px-4 py-2 border-b border-border bg-card/40">
+            <select id="lang-select" class="input !w-auto !py-1.5 !px-2.5 text-xs">
+              <option value="python">Python</option>
+              <option value="javascript">JavaScript</option>
+              <option value="cpp">C++</option>
+              <option value="java">Java</option>
+            </select>
+            <div class="flex gap-2">
+              <button id="reset-btn" class="btn btn-outline !py-1.5 !px-3 text-xs"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Reset</button>
+              <button id="run-btn" class="btn btn-outline !py-1.5 !px-3 text-xs"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="6 3 20 12 6 21 6 3"/></svg>Run</button>
+              <button id="submit-btn" class="btn btn-primary !py-1.5 !px-3 text-xs"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>Submit</button>
+            </div>
+          </div>
+          <div id="editor-host" class="flex-1 min-h-[260px]"></div>
+          <div class="border-t border-border bg-card/40 max-h-[42%] overflow-y-auto">
+            <div class="px-4 py-2 border-b border-border text-xs uppercase tracking-wider text-mutedfg" id="console-status">Console</div>
+            <div id="console-body" class="p-4 text-xs text-mutedfg">Run your code to see output, or submit to get an AI verdict.</div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</section>
+
+<script>
+
+function applyTheme(t) {
+  document.documentElement.classList.toggle('dark', t === 'dark');
+  document.documentElement.style.colorScheme = t;
+  localStorage.setItem('codearena-theme', t);
+  // Swap icons
+  document.querySelectorAll('[id^="sun-icon-"]').forEach(el => {
+    el.outerHTML = t === 'dark'
+      ? `<svg id="${el.id}" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>`
+      : `<svg id="${el.id}" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>`;
+  });
+  if (window.cmEditor) window.cmEditor.setOption('theme', t === 'dark' ? 'dracula' : 'default');
+}
+function toggleTheme() {
+  const cur = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+  applyTheme(cur === 'dark' ? 'light' : 'dark');
+}
+applyTheme(localStorage.getItem('codearena-theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
+
+function go(route, ...args) {
+if (name === 'landing') {
+  document.getElementById('view-landing').classList.add('active');
+  return;
+}
+
+const app = document.getElementById('view-app');
+app.classList.add('active');
+app.style.display = 'flex';   // 👈 force flex ONLY here
+  if (route === 'dashboard') { location.hash = '#/dashboard'; }
+  else if (route === 'problems') { location.hash = '#/problems'; }
+  else if (route === 'detail') { location.hash = '#/problem/' + args[0]; }
+  handleRoute();
+}
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  if (name === 'landing') { document.getElementById('view-landing').classList.add('active'); return; }
+  document.getElementById('view-app').classList.add('active');
+  document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+  document.getElementById('page-' + name).classList.remove('hidden');
+  renderSidebar(name);
+}
+function handleRoute() {
+  const h = location.hash;
+  if (!h || h === '#/') return showView('landing');
+  if (h === '#/dashboard') { showView('dashboard'); renderDashboard(); return; }
+  if (h === '#/problems') { showView('problems'); renderProblems(); return; }
+  const m = h.match(/^#\/problem\/(.+)$/);
+  if (m) { showView('detail'); renderDetail(decodeURIComponent(m[1])); return; }
+  showView('landing');
+}
+window.addEventListener('hashchange', handleRoute);
+
+const PROBLEMS = [
+  { slug:'two-sum', title:'Two Sum', difficulty:'easy', topics:['arrays','hashmap'],
+    description:'Given an array of integers nums and an integer target, return the indices of the two numbers such that they add up to target. You may assume that each input has exactly one solution, and you may not use the same element twice.',
+    examples:[{input:'nums = [2,7,11,15], target = 9', output:'[0,1]', explanation:'Because nums[0] + nums[1] == 9, we return [0, 1].'}],
+    constraints:'2 ≤ nums.length ≤ 10^4\n-10^9 ≤ nums[i] ≤ 10^9\nOnly one valid answer exists.',
+    hints:['Brute force is O(n²). Can you do better with extra memory?', 'A hashmap lets you check the complement in O(1).', 'Walk once: for each x, look up target − x.'],
+    starter:{python:'def two_sum(nums, target):\n    # your code here\n    pass\n', javascript:'function twoSum(nums, target) {\n  // your code here\n}\n', cpp:'#include <vector>\nusing namespace std;\nclass Solution {\npublic:\n    vector<int> twoSum(vector<int>& nums, int target) {\n        // your code\n    }\n};\n', java:'class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        // your code\n        return new int[]{};\n    }\n}\n'} },
+  { slug:'valid-parentheses', title:'Valid Parentheses', difficulty:'easy', topics:['stack','strings'],
+    description:'Given a string s containing just "(", ")", "{", "}", "[" and "]", determine if the input string is valid. Brackets must close in the correct order.',
+    examples:[{input:'s = "()[]{}"', output:'true'},{input:'s = "(]"', output:'false'}],
+    constraints:'1 ≤ s.length ≤ 10^4',
+    hints:['What data structure mirrors LIFO behaviour?', 'Push openings, pop on matching close.', 'String is invalid if stack is non-empty at the end.'],
+    starter:{python:'def is_valid(s):\n    pass\n', javascript:'function isValid(s) {\n}\n', cpp:'#include <string>\nbool isValid(std::string s) { }\n', java:'class Solution { public boolean isValid(String s){ return false; } }\n'} },
+  { slug:'reverse-linked-list', title:'Reverse Linked List', difficulty:'easy', topics:['linked-list','recursion'],
+    description:'Given the head of a singly linked list, reverse the list and return the reversed list.',
+    examples:[{input:'1 → 2 → 3 → 4 → 5', output:'5 → 4 → 3 → 2 → 1'}],
+    constraints:'0 ≤ list length ≤ 5000',
+    hints:['Three pointers: prev, curr, next.', 'Iterate while curr is not null.', 'Recursive variant: reverse the rest, then attach.'],
+    starter:{python:'def reverse_list(head):\n    pass\n', javascript:'function reverseList(head) {}\n', cpp:'// definition assumed\n', java:'class Solution { public ListNode reverseList(ListNode head){ return null; } }\n'} },
+  { slug:'longest-substring', title:'Longest Substring Without Repeating Characters', difficulty:'medium', topics:['strings','sliding-window','hashmap'],
+    description:'Given a string s, find the length of the longest substring without repeating characters.',
+    examples:[{input:'s = "abcabcbb"', output:'3', explanation:'The answer is "abc", with length 3.'}],
+    constraints:'0 ≤ s.length ≤ 5 * 10^4',
+    hints:['Two-pointer / sliding window.','Use a set to track characters in the current window.','Shrink from the left when you see a duplicate.'],
+    starter:{python:'def length_of_longest_substring(s):\n    pass\n', javascript:'function lengthOfLongestSubstring(s) {}\n', cpp:'int lengthOfLongestSubstring(std::string s){return 0;}\n', java:'class Solution{ public int lengthOfLongestSubstring(String s){return 0;} }\n'} },
+  { slug:'binary-tree-level-order', title:'Binary Tree Level Order Traversal', difficulty:'medium', topics:['tree','bfs','queue'],
+    description:'Given the root of a binary tree, return the level order traversal of its node values (i.e., from left to right, level by level).',
+    examples:[{input:'[3,9,20,null,null,15,7]', output:'[[3],[9,20],[15,7]]'}],
+    constraints:'0 ≤ nodes ≤ 2000',
+    hints:['BFS is the natural fit.','Process one level at a time using the queue size.','Push children left then right.'],
+    starter:{python:'def level_order(root):\n    pass\n', javascript:'function levelOrder(root) {}\n', cpp:'// ...\n', java:'// ...\n'} },
+  { slug:'coin-change', title:'Coin Change', difficulty:'medium', topics:['dp','greedy'],
+    description:'You are given an integer array coins representing coins of different denominations and an integer amount. Return the fewest number of coins needed to make up that amount. If impossible, return -1.',
+    examples:[{input:'coins = [1,2,5], amount = 11', output:'3', explanation:'11 = 5 + 5 + 1.'}],
+    constraints:'1 ≤ coins.length ≤ 12\n1 ≤ amount ≤ 10^4',
+    hints:['Greedy fails — think DP.','dp[x] = min coins to make amount x.','Transition: dp[x] = 1 + min(dp[x − c]) for each coin c ≤ x.'],
+    starter:{python:'def coin_change(coins, amount):\n    pass\n', javascript:'function coinChange(coins, amount) {}\n', cpp:'// ...\n', java:'// ...\n'} },
+  { slug:'word-break', title:'Word Break', difficulty:'medium', topics:['dp','strings','trie'],
+    description:'Given a string s and a dictionary of strings wordDict, return true if s can be segmented into a space-separated sequence of one or more dictionary words.',
+    examples:[{input:'s = "leetcode", wordDict = ["leet","code"]', output:'true'}],
+    constraints:'1 ≤ s.length ≤ 300',
+    hints:['DP over prefixes.','dp[i] = true iff s[0..i] is segmentable.','For each i, scan back and check dp[j] && (s[j..i] ∈ dict).'],
+    starter:{python:'def word_break(s, word_dict):\n    pass\n', javascript:'function wordBreak(s, wordDict) {}\n', cpp:'// ...\n', java:'// ...\n'} },
+  { slug:'median-of-two-sorted', title:'Median of Two Sorted Arrays', difficulty:'hard', topics:['arrays','binary-search','divide-and-conquer'],
+    description:'Given two sorted arrays nums1 and nums2 of size m and n, return the median of the two sorted arrays. The overall run time complexity should be O(log(m+n)).',
+    examples:[{input:'nums1 = [1,3], nums2 = [2]', output:'2.0'}],
+    constraints:'0 ≤ m, n ≤ 1000\n1 ≤ m + n ≤ 2000',
+    hints:['Linear merge is O(m+n) — needs to be log.','Binary search the partition on the smaller array.','Maintain max(left) ≤ min(right) on both sides.'],
+    starter:{python:'def find_median_sorted_arrays(a, b):\n    pass\n', javascript:'function findMedianSortedArrays(a, b) {}\n', cpp:'// ...\n', java:'// ...\n'} },
+];
+
+const MOCK_ATTEMPTS = [
+  { topic:'arrays', correct:8, total:12 },
+  { topic:'hashmap', correct:5, total:7 },
+  { topic:'strings', correct:6, total:10 },
+  { topic:'dp', correct:2, total:9 },
+  { topic:'tree', correct:4, total:6 },
+  { topic:'binary-search', correct:1, total:5 },
+];
+const MOCK_RECENT = [
+  { title:'Two Sum', slug:'two-sum', status:'accepted', when:'2 hours ago' },
+  { title:'Coin Change', slug:'coin-change', status:'wrong_answer', when:'5 hours ago' },
+  { title:'Valid Parentheses', slug:'valid-parentheses', status:'accepted', when:'yesterday' },
+  { title:'Longest Substring Without Repeating Characters', slug:'longest-substring', status:'wrong_answer', when:'yesterday' },
+  { title:'Reverse Linked List', slug:'reverse-linked-list', status:'accepted', when:'2 days ago' },
+];
+
+const SOLVED_KEY = 'codearena-solved';
+function getSolved() { try { return JSON.parse(localStorage.getItem(SOLVED_KEY)) || []; } catch { return []; } }
+function markSolved(slug) { const s = new Set(getSolved()); s.add(slug); localStorage.setItem(SOLVED_KEY, JSON.stringify([...s])); }
+
+function renderSidebar(active) {
+  const items = [
+    { key:'dashboard', label:'Dashboard', icon:'<rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/>' },
+    { key:'problems', label:'Problems', icon:'<path d="M9 11l3 3 8-8"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>' },
+  ];
+  const html = items.map(it => {
+    const isActive = (active === it.key) || (active === 'detail' && it.key === 'problems');
+    return `<a href="#" onclick="event.preventDefault(); go('${it.key}')" class="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors ${isActive ? 'bg-muted text-fg' : 'text-mutedfg hover:bg-muted hover:text-fg'}">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${it.icon}</svg>
+      ${it.label}
+    </a>`;
+  }).join('');
+  document.getElementById('sidebar-nav').innerHTML = html;
+}
+
+function renderDashboard() {
+  const solved = getSolved().length;
+  const totalAttempts = MOCK_ATTEMPTS.reduce((s,a)=>s+a.total,0);
+  const correct = MOCK_ATTEMPTS.reduce((s,a)=>s+a.correct,0);
+  const accuracy = totalAttempts ? Math.round(correct/totalAttempts*100) : 0;
+
+  const cards = [
+    { label:'Problems solved', value: solved + 5, icon:'<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>' },
+    { label:'Accuracy', value: accuracy + '%', icon:'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>' },
+    { label:'Day streak', value: 7, accent:true, icon:'<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>' },
+    { label:'Total attempts', value: totalAttempts, icon:'<path d="m7 7 10 10"/><path d="M17 7v10H7"/>' },
+  ];
+  document.getElementById('stat-cards').innerHTML = cards.map(c => `
+    <div class="surface rounded-xl p-5 border border-border ${c.accent ? 'ring-1 ring-primary/30' : ''}">
+      <div class="flex items-center gap-2 text-xs text-mutedfg">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="${c.accent?'text-primary':''}">${c.icon}</svg>
+        ${c.label}
+      </div>
+      <div class="mt-2 font-display text-3xl">${c.value}</div>
+    </div>`).join('');
+
+  const data = MOCK_ATTEMPTS.map(a => ({ topic:a.topic, accuracy: Math.round(a.correct/a.total*100), total:a.total }));
+  const W = 600, H = 240, pad = 30;
+  const bw = (W - pad*2) / data.length;
+  const max = 100;
+  const bars = data.map((d,i) => {
+    const h = (d.accuracy/max) * (H - pad*2);
+    const x = pad + i*bw + 8;
+    const y = H - pad - h;
+    return `
+      <g class="bar">
+        <rect x="${x}" y="${y}" width="${bw-16}" height="${h}" rx="6" fill="rgb(var(--primary))" />
+        <text x="${x + (bw-16)/2}" y="${y - 6}" text-anchor="middle" font-size="10" fill="rgb(var(--mutedfg))">${d.accuracy}%</text>
+        <text x="${x + (bw-16)/2}" y="${H - pad + 14}" text-anchor="middle" font-size="10" fill="rgb(var(--mutedfg))">${d.topic}</text>
+      </g>`;
+  }).join('');
+  const yLines = [0,25,50,75,100].map(v => {
+    const y = H - pad - (v/max)*(H - pad*2);
+    return `<line x1="${pad}" y1="${y}" x2="${W-pad}" y2="${y}" stroke="rgb(var(--border))" stroke-dasharray="3 3" />
+            <text x="${pad-6}" y="${y+3}" text-anchor="end" font-size="9" fill="rgb(var(--mutedfg))">${v}%</text>`;
+  }).join('');
+  document.getElementById('bar-chart').innerHTML = `<svg viewBox="0 0 ${W} ${H}" class="w-full h-full">${yLines}${bars}</svg>`;
+
+  const weakest = [...data].sort((a,b)=>a.accuracy-b.accuracy)[0];
+  document.getElementById('weakness').innerHTML = `
+    <div>
+      <p class="text-sm text-mutedfg">Your weakest topic right now</p>
+      <p class="font-display text-2xl mt-1">${weakest.topic}</p>
+      <p class="text-sm text-mutedfg mt-1">${weakest.accuracy}% accuracy across ${weakest.total} attempts</p>
+    </div>
+    <a href="#" onclick="event.preventDefault(); go('problems'); setTimeout(()=>{document.getElementById('search').value='${weakest.topic}'; filterProblems();},100)"
+       class="block text-center w-full px-3 py-2 rounded-md bg-primary text-primaryfg text-sm font-medium hover:opacity-90 transition mt-3">
+      Drill ${weakest.topic} now
+    </a>`;
+
+  // Recent
+  document.getElementById('recent-activity').innerHTML = MOCK_RECENT.map(r => `
+    <a href="#" onclick="event.preventDefault(); go('detail','${r.slug}')" class="flex items-center justify-between py-3 hover:bg-muted -mx-2 px-2 rounded-md transition-colors">
+      <div class="flex items-center gap-3 min-w-0">
+        <span class="inline-block size-2 rounded-full shrink-0" style="background: ${r.status==='accepted'?'rgb(var(--success))':'rgb(var(--danger))'}"></span>
+        <span class="truncate">${r.title}</span>
+      </div>
+      <span class="text-xs text-mutedfg shrink-0">${r.when}</span>
+    </a>`).join('');
+}
+
+function renderProblems() {
+  const sel = document.getElementById('topic-filter');
+  if (!sel.options.length) {
+    const topics = [...new Set(PROBLEMS.flatMap(p => p.topics))].sort();
+    sel.innerHTML = `<option value="all">All topics</option>` + topics.map(t => `<option value="${t}">${t}</option>`).join('');
+    sel.onchange = filterProblems;
+    document.getElementById('diff-filter').onchange = filterProblems;
+    document.getElementById('search').oninput = filterProblems;
+  }
+  filterProblems();
+}
+function filterProblems() {
+  const q = document.getElementById('search').value.toLowerCase().trim();
+  const diff = document.getElementById('diff-filter').value;
+  const topic = document.getElementById('topic-filter').value;
+  const solved = new Set(getSolved());
+
+  const rows = PROBLEMS.filter(p =>
+    (diff==='all' || p.difficulty===diff) &&
+    (topic==='all' || p.topics.includes(topic)) &&
+    (!q || p.title.toLowerCase().includes(q) || p.topics.some(t=>t.includes(q)))
+  );
+  document.getElementById('problems-count').textContent = `${rows.length} problem${rows.length===1?'':'s'}`;
+
+  document.getElementById('problems-rows').innerHTML = rows.map((p,i) => `
+    <tr class="border-b border-border last:border-0 hover:bg-muted cursor-pointer transition-colors" onclick="go('detail','${p.slug}')">
+      <td class="px-4 py-3 text-mutedfg font-mono text-xs">${(i+1).toString().padStart(2,'0')}</td>
+      <td class="px-4 py-3 font-medium">${p.title}</td>
+      <td class="px-4 py-3 hidden md:table-cell"><div class="flex flex-wrap gap-1">${p.topics.slice(0,3).map(t=>`<span class="chip">${t}</span>`).join('')}</div></td>
+      <td class="px-4 py-3"><span class="pill pill-${p.difficulty}">${p.difficulty}</span></td>
+      <td class="px-4 py-3 hidden sm:table-cell">${solved.has(p.slug) ? '<span class="text-success text-xs flex items-center gap-1"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>Solved</span>' : '<span class="text-mutedfg text-xs">—</span>'}</td>
+    </tr>`).join('') || `<tr><td colspan="5" class="px-4 py-12 text-center text-mutedfg text-sm">No problems match your filters.</td></tr>`;
+}
+
+let currentProblem = null;
+let hintLevel = 0;
+let activeNote = '';
+
+function renderDetail(slug) {
+  const p = PROBLEMS.find(x => x.slug === slug);
+  if (!p) { go('problems'); return; }
+  currentProblem = p;
+  hintLevel = 0;
+  activeNote = localStorage.getItem('note-' + slug) || '';
+
+  document.getElementById('detail-left').innerHTML = `
+    <a href="#" onclick="event.preventDefault(); go('problems')" class="inline-flex items-center gap-1 text-sm text-mutedfg hover:text-fg mb-4">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg> All problems
+    </a>
+    <div class="flex items-center gap-3 mb-3 flex-wrap">
+      <h1 class="font-display text-3xl">${p.title}</h1>
+      <span class="pill pill-${p.difficulty}">${p.difficulty}</span>
+    </div>
+    <div class="flex flex-wrap gap-1.5 mb-6">${p.topics.map(t=>`<span class="chip">${t}</span>`).join('')}</div>
+
+    <div class="flex gap-2 border-b border-border mb-4 text-sm">
+      <button data-tab="description" class="tab-btn px-3 py-2 border-b-2 border-primary text-fg">Description</button>
+      <button data-tab="hints" class="tab-btn px-3 py-2 border-b-2 border-transparent text-mutedfg hover:text-fg">Hints</button>
+      <button data-tab="notes" class="tab-btn px-3 py-2 border-b-2 border-transparent text-mutedfg hover:text-fg">My notes</button>
+    </div>
+
+    <div data-tab-panel="description" class="space-y-5">
+      <p class="text-sm leading-relaxed whitespace-pre-line">${p.description}</p>
+      <div>
+        <h3 class="text-xs uppercase tracking-wider text-mutedfg mb-1.5">Constraints</h3>
+        <pre class="text-xs font-mono whitespace-pre-wrap text-mutedfg">${p.constraints}</pre>
+      </div>
+      <div>
+        <h3 class="text-xs uppercase tracking-wider text-mutedfg mb-1.5">Examples</h3>
+        <div class="space-y-3">
+          ${p.examples.map((s,i)=>`
+            <div class="rounded-md border border-border bg-muted/40 p-3 space-y-1.5">
+              <div class="text-[10px] uppercase tracking-wider text-mutedfg">Example ${i+1}</div>
+              <div class="text-xs"><span class="text-mutedfg">Input:</span> <code class="font-mono">${s.input}</code></div>
+              <div class="text-xs"><span class="text-mutedfg">Output:</span> <code class="font-mono">${s.output}</code></div>
+              ${s.explanation?`<div class="text-xs text-mutedfg">${s.explanation}</div>`:''}
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div data-tab-panel="hints" class="hidden space-y-3">
+      <div id="hints-list"></div>
+      <button onclick="revealHint()" id="hint-btn" class="btn btn-outline">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2v.3h6v-.3c0-.8.4-1.5 1-2A7 7 0 0 0 12 2z"/></svg>
+        Reveal next hint
+      </button>
+    </div>
+
+    <div data-tab-panel="notes" class="hidden">
+      <textarea id="note-area" placeholder="Jot down your approach, pitfalls, complexity notes..." class="input min-h-[200px] font-mono text-sm">${escapeHtml(activeNote)}</textarea>
+      <p class="text-xs text-mutedfg mt-1.5">Saved automatically (in this browser).</p>
+    </div>
+  `;
+
+  document.querySelectorAll('.tab-btn').forEach(b => b.onclick = () => {
+    document.querySelectorAll('.tab-btn').forEach(x => { x.classList.remove('border-primary','text-fg'); x.classList.add('border-transparent','text-mutedfg'); });
+    b.classList.add('border-primary','text-fg'); b.classList.remove('border-transparent','text-mutedfg');
+    document.querySelectorAll('[data-tab-panel]').forEach(p => p.classList.add('hidden'));
+    document.querySelector(`[data-tab-panel="${b.dataset.tab}"]`).classList.remove('hidden');
+  });
+  document.getElementById('note-area').addEventListener('input', e => {
+    localStorage.setItem('note-' + slug, e.target.value);
+  });
+  renderHints();
+
+  const lang = document.getElementById('lang-select').value;
+  setupEditor(p.starter[lang] || '', lang);
+
+  document.getElementById('lang-select').onchange = (e) => setupEditor(p.starter[e.target.value] || '', e.target.value);
+  document.getElementById('reset-btn').onclick = () => {
+    const lg = document.getElementById('lang-select').value;
+    if (window.cmEditor) window.cmEditor.setValue(p.starter[lg] || '');
+  };
+  document.getElementById('run-btn').onclick = runCode;
+  document.getElementById('submit-btn').onclick = submitCode;
+  setConsole('idle', 'Run your code to see output, or submit to get an AI verdict.');
+}
+
+function escapeHtml(s){return (s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+function revealHint() {
+  if (!currentProblem) return;
+  if (hintLevel >= currentProblem.hints.length) return;
+  hintLevel++;
+  renderHints();
+}
+function renderHints() {
+  const list = document.getElementById('hints-list');
+  if (!list) return;
+  if (hintLevel === 0) {
+    list.innerHTML = '<p class="text-sm text-mutedfg">No hints revealed yet. Click below for a progressive nudge — they get more direct.</p>';
+  } else {
+    list.innerHTML = currentProblem.hints.slice(0, hintLevel).map((h,i)=>`
+      <div class="surface rounded-md border border-border p-3 text-sm mb-2">
+        <div class="text-[10px] uppercase tracking-wider text-warning mb-1">Hint ${i+1}</div>
+        ${h}
+      </div>`).join('');
+  }
+  const btn = document.getElementById('hint-btn');
+  if (hintLevel >= currentProblem.hints.length) {
+    btn.disabled = true; btn.style.opacity = .5; btn.innerHTML = 'No more hints — you got this!';
+  }
+}
+
+const CM_MODES = { python:'python', javascript:'javascript', cpp:'text/x-c++src', java:'text/x-java' };
+function setupEditor(code, lang) {
+  const host = document.getElementById('editor-host');
+  host.innerHTML = '';
+  const ta = document.createElement('textarea');
+  host.appendChild(ta);
+  window.cmEditor = CodeMirror.fromTextArea(ta, {
+    value: code,
+    mode: CM_MODES[lang] || 'python',
+    theme: document.documentElement.classList.contains('dark') ? 'dracula' : 'default',
+    lineNumbers: true,
+    indentUnit: 2,
+    tabSize: 2,
+    autoCloseBrackets: true,
+    matchBrackets: true,
+  });
+  window.cmEditor.setValue(code);
+  setTimeout(()=>window.cmEditor.refresh(), 50);
+}
+
+function setConsole(state, body, extra) {
+  const status = document.getElementById('console-status');
+  const map = {
+    idle:    `Console`,
+    running: `<span class="inline-flex items-center gap-1.5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="animate-spin"><path d="M21 12a9 9 0 1 1-6.2-8.5"/></svg> Running…</span>`,
+    accepted:`<span class="inline-flex items-center gap-1.5 text-success"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg> Accepted</span>`,
+    wrong:   `<span class="inline-flex items-center gap-1.5 text-danger"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m12 8 0 4"/><path d="m12 16 .01 0"/></svg> Wrong answer</span>`,
+  };
+  status.innerHTML = map[state] || map.idle;
+  document.getElementById('console-body').innerHTML = body + (extra || '');
+}
+
+function evaluateCode(code) {
+  const c = (code || '').trim();
+  if (!c) return { passed:false, reason:'Editor is empty.' };
+  // Heuristics: must have a return / print / cout / System.out
+  const hasReturn = /\breturn\b/.test(c);
+  const hasPrint = /\bprint\b|console\.log|cout|System\.out/.test(c);
+  const tooShort = c.split('\n').filter(l=>l.trim() && !l.trim().startsWith('//') && !l.trim().startsWith('#')).length < 3;
+  const stub = /pass\s*$|^\s*\}\s*$|return\s+(\[\]|null|0)\s*;?$/m.test(c) && c.length < 200;
+  if (tooShort || stub) return { passed:false, reason:'Looks like a stub — fill in the logic.' };
+  if (!hasReturn && !hasPrint) return { passed:false, reason:'No return/print statement — your function does nothing.' };
+  // 70% pass for non-trivial code
+  return { passed: Math.random() < 0.7, reason: null };
+}
+
+function runCode() {
+  setConsole('running', '<span class="text-mutedfg">Simulating run on sample test 1…</span>');
+  setTimeout(() => {
+    const code = window.cmEditor.getValue();
+    const ex = currentProblem.examples[0];
+    const r = evaluateCode(code);
+    const out = r.passed ? ex.output : (r.reason || 'Output did not match');
+    setConsole('idle', `
+      <div class="space-y-2">
+        <div class="text-[10px] uppercase tracking-wider text-mutedfg">Sample input</div>
+        <pre class="font-mono bg-muted p-2 rounded text-xs">${escapeHtml(ex.input)}</pre>
+        <div class="text-[10px] uppercase tracking-wider text-mutedfg">Your output</div>
+        <pre class="font-mono bg-muted p-2 rounded text-xs ${r.passed?'text-success':'text-danger'}">${escapeHtml(out)}</pre>
+        <div class="text-[10px] uppercase tracking-wider text-mutedfg">Expected</div>
+        <pre class="font-mono bg-muted p-2 rounded text-xs">${escapeHtml(ex.output)}</pre>
+      </div>
+    `);
+  }, 700);
+}
+
+function submitCode() {
+  setConsole('running', '<span class="text-mutedfg">AI judge is evaluating your submission…</span>');
+  setTimeout(() => {
+    const code = window.cmEditor.getValue();
+    const r = evaluateCode(code);
+    if (r.passed) {
+      markSolved(currentProblem.slug);
+      setConsole('accepted', `
+        <div class="space-y-2">
+          <p class="text-sm">Nicely done! Your solution passes all sample tests.</p>
+          <div class="rounded-md border border-success/30 bg-success/5 p-3 text-xs">
+            <div class="font-medium text-success mb-1">Complexity (estimate)</div>
+            <p class="text-mutedfg">Time: O(n) · Space: O(n) · Looks competitive.</p>
+          </div>
+        </div>`);
+    } else {
+      const fb = mockFeedback(code, r.reason);
+      setConsole('wrong', `
+        <div class="space-y-2">
+          <div class="rounded-md border border-danger/30 bg-danger/5 p-3">
+            <div class="text-[10px] uppercase tracking-wider text-mutedfg mb-1">What's wrong</div>
+            <p class="text-sm">${fb.error}</p>
+          </div>
+          <div class="rounded-md border border-warning/30 bg-warning/5 p-3">
+            <div class="text-[10px] uppercase tracking-wider text-mutedfg mb-1">Where to look</div>
+            <p class="text-sm">${fb.lineHint}</p>
+          </div>
+          <div class="rounded-md border border-primary/30 bg-primary/5 p-3">
+            <div class="text-[10px] uppercase tracking-wider text-mutedfg mb-1">Suggestion</div>
+            <p class="text-sm">${fb.suggestion}</p>
+          </div>
+        </div>`);
+    }
+  }, 1100);
+}
+
+function mockFeedback(code, reason) {
+  const lines = code.split('\n');
+  const idx = Math.max(2, Math.min(lines.length, Math.floor(lines.length/2)));
+  return {
+    error: reason || 'Output does not match the expected result on at least one sample test.',
+    lineHint: `Check around line ${idx} — the loop condition or return value seems off.`,
+    suggestion: currentProblem?.hints?.[0] || 'Re-read the problem statement and walk through example 1 by hand before changing code.',
+  };
+}
+handleRoute();
+</script>
+</body>
+</html>
