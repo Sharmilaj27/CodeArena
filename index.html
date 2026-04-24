@@ -417,7 +417,7 @@ if (name === 'landing') {
 
 const app = document.getElementById('view-app');
 app.classList.add('active');
-app.style.display = 'flex';   // 👈 force flex ONLY here
+app.style.display = 'flex';  
   if (route === 'dashboard') { location.hash = '#/dashboard'; }
   else if (route === 'problems') { location.hash = '#/problems'; }
   else if (route === 'detail') { location.hash = '#/problem/' + args[0]; }
